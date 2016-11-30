@@ -1,3 +1,3 @@
 #/bin/bash
-#test project
+#test project git hook
 echo "hello world!"
