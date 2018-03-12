@@ -1,0 +1,53 @@
+# -*- coding: utf-8 -*-
+import requests
+import traceback
+from lxml import etree
+
+class Gu:
+    # 类初始化
+    def __init__(self, Gu_id, filter=0):
+        self.gu_id = Gu_id  # id，即需要我们输入的数字，如昵称为“中国平安”的id为sh601318
+        self.filter = filter  # 取值范围为0、1，程序默认值为0，代表
+        self.gu_name = []  # 股名，如“中国平安”
+        self.gu_content = []
+
+    # 获取价格
+    def get_gu_info(self):
+        try:
+            url = "http://gu.qq.com/%s?gu_id/gp"% (
+                self.gu_id)
+            html = requests.get(url).content
+            selector = etree.HTML(html)
+            info = selector.xpath("//span[@class='data']")
+            info1 = selector.xpath("//h1[@class='col-1-1']")
+            gu_content = info[0].text
+            gu_name = info1[0].text
+            self.gu_content.append(gu_content)
+            self.gu_name.append(gu_name)
+        except Exception, e:
+            print "Error1: ", e
+            traceback.print_exc()
+    # 运行爬虫
+    def start(self):
+        try:
+            self.get_gu_info()
+            print u"信息抓取完毕"
+        except Exception, e:
+            print "Error: ", e
+            traceback.print_exc()
+
+def main():
+    try:
+        # 使用实例,输入一个用户id，所有信息都会存储在gj实例中
+        gu_id = 'sh601318'  # 可以改成任意合法的股票id
+        filter = 1  # 值为0表示爬取全部，值为1表示只爬取原创
+        gj = Gu(gu_id, filter)  # 调用Gu类，创建实例gj
+        gj.start()  # 爬取信息
+        print u"股名：" + gj.gu_id
+        print u"最新价格：" + gj.gu_content[0]
+    except Exception, e:
+        print "Error: ", e
+        traceback.print_exc()
+
+if __name__ == "__main__":
+    main()
